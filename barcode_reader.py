@@ -2,13 +2,13 @@ import cv2
 import os
 from pyzbar.pyzbar import decode
 
-IMAGE_FOLDER = "barcodes"   
-OUTPUT_FILE = "output.txt" 
+IMAGE_FOLDER = "barcodes"
+OUTPUT_FILE = "output.txt"
 
-CROP_X = 313    
-CROP_Y = 435   
-CROP_WIDTH = 642  
-CROP_HEIGHT = 615 
+CROP_X = 206
+CROP_Y = 360
+CROP_WIDTH = 657
+CROP_HEIGHT = 744
 
 def read_barcode(image_path):
     """Reads and extracts Barcode39 from a cropped image."""
@@ -25,23 +25,28 @@ def read_barcode(image_path):
 
     decoded_objects = decode(cropped)
     if decoded_objects:
-        return decoded_objects[0].data.decode("utf-8")  
+        return decoded_objects[0].data.decode("utf-8")
     else:
         return "NO_BARCODE"
 
 def process_images(folder):
     """Processes all images in the folder and writes results to a text file."""
-    results = []
-    for filename in os.listdir(folder):
-        if filename.lower().endswith(".jpg"):
-            image_path = os.path.join(folder, filename)
-            barcode = read_barcode(image_path)
-            results.append(f"{barcode}, {filename}")
+    print("Running")  # Indicate that processing has started
+    try:
+        results = []
+        for filename in os.listdir(folder):
+            if filename.lower().endswith(".jpg"):
+                image_path = os.path.join(folder, filename)
+                barcode = read_barcode(image_path)
+                results.append(f"{barcode};{filename}")
+                print(f"{barcode};{filename}")
 
-    with open(OUTPUT_FILE, "w") as f:
-        f.write("\n".join(results))
-    
-    print(f"✅ Processed {len(results)} images. Results saved in '{OUTPUT_FILE}'.")
+        with open(OUTPUT_FILE, "w") as f:
+            f.write("\n".join(results))
+
+        print(f"✅ Processed {len(results)} images. Results saved in '{OUTPUT_FILE}'.")
+    except Exception as e:
+        print("Error:", e)  # Display the error message
 
 if __name__ == "__main__":
     process_images(IMAGE_FOLDER)
